@@ -38,6 +38,18 @@
         "xmemory": "cpp",
         "xstddef": "cpp",
         "xtr1common": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "fstream": "cpp",
+        "chrono": "cpp",
+        "ctime": "cpp",
+        "filesystem": "cpp",
+        "iomanip": "cpp",
+        "list": "cpp",
+        "locale": "cpp",
+        "ratio": "cpp",
+        "xlocbuf": "cpp",
+        "xlocmes": "cpp",
+        "xlocmon": "cpp",
+        "xloctime": "cpp"
     }
 }

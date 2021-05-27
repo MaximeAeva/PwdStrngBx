@@ -1,6 +1,7 @@
 #include <iostream>
 #include "utils.hpp"
 #include "aes.hpp"
+#include "io.hpp"
 
 int main()
 {
@@ -13,7 +14,7 @@ int main()
 
     safeinput(array);
     convertToHex(array, key);
-    safeinput(mot, 16);
+    safeinput(mot, 17);
     convertToHex(mot, plain);
 
     //Output key  
@@ -45,7 +46,9 @@ int main()
             std::cout << std::endl;  
     }  
     std::cout << std::endl;  
-  
+
+    writeFile(plain);
+
     //Decrypt, output plaintext  
     decrypt(plain, w);  
     std::cout << "Decrypted plaintext:"<< std::endl;  
@@ -61,6 +64,7 @@ int main()
     
     std::cout << motu << std::endl;
 
+    std::cout << existence() << std::endl;
 
     return 0;  
 }
