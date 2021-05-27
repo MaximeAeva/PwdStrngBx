@@ -1,20 +1,29 @@
 #include "utils.hpp"
 
-void safeinput(char *array, int s)
+void bufferEmptying()
 {
-    std::cin.get(array, s); 
-    std::cin.clear();
-    std::cin.ignore(16, '\n');
+    int c = 0;
+    while (c != '\n' && c != EOF)
+    {
+        c = getchar();
+    }
 }
 
-void convertToChar(byte* input, char* array)
+void safeinput(char *array, int s)
+{
+    std::cin.get(array, s);
+    bufferEmptying();
+}
+
+void convertToChar(byte* input, char* array, int s)
 {
     int i = 0;
-    while(array[i] != '\0') 
+    while(i<s) 
     {
         array[i] = char(input[i].to_ulong());
         i++;
     }
+    array[i++] = '\0';
 }
 
 void convertToHex(char* array, byte* output)
@@ -25,6 +34,13 @@ void convertToHex(char* array, byte* output)
         output[loop] = std::bitset<8>(int(array[loop]));
         loop++;
     }
+}
 
-    output[loop++] = '\0';
+void sequencer(char* array, int s)
+{
+    int c = 0;
+    while (c != '\n' && c != EOF)
+    {
+        c = getchar();
+    }
 }

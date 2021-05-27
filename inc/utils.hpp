@@ -9,9 +9,9 @@
 
 typedef std::bitset<8> byte;   
 
-void safeinput(char *array, int s = 16);
+void safeinput(char *array, int s = 17);
 
-void convertToChar(byte* input, char* array);
+void convertToChar(byte* input, char* array, int s = 16);
 
 void convertToHex(char* array, byte* output);
 

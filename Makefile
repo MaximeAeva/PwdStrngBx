@@ -10,7 +10,8 @@ OBJ_DIR =       obj
 # sources
 PROJ_SRC_LIST = main.cpp \
 				utils.cpp \
-				aes.cpp
+				aes.cpp \
+				io.cpp
 
 # objects
 PROJ_OBJ_LIST = $(PROJ_SRC_LIST:.cpp=.o)
