@@ -1,6 +1,6 @@
 #include "aes.hpp"
 
-const byte S_Box[16][16] = {  
+const sbyte S_Box[16][16] = {  
     {0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76},  
     {0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0},  
     {0xB7, 0xFD, 0x93, 0x26, 0x36, 0x3F, 0xF7, 0xCC, 0x34, 0xA5, 0xE5, 0xF1, 0x71, 0xD8, 0x31, 0x15},  
@@ -19,7 +19,7 @@ const byte S_Box[16][16] = {
     {0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41, 0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16}  
 }; 
 
-const byte Inv_S_Box[16][16] = {  
+const sbyte Inv_S_Box[16][16] = {  
     {0x52, 0x09, 0x6A, 0xD5, 0x30, 0x36, 0xA5, 0x38, 0xBF, 0x40, 0xA3, 0x9E, 0x81, 0xF3, 0xD7, 0xFB},  
     {0x7C, 0xE3, 0x39, 0x82, 0x9B, 0x2F, 0xFF, 0x87, 0x34, 0x8E, 0x43, 0x44, 0xC4, 0xDE, 0xE9, 0xCB},  
     {0x54, 0x7B, 0x94, 0x32, 0xA6, 0xC2, 0x23, 0x3D, 0xEE, 0x4C, 0x95, 0x0B, 0x42, 0xFA, 0xC3, 0x4E},  
@@ -43,7 +43,7 @@ const word Rcon[10] = {0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x1000000
 
 /* Key expansion utils */
 
-word Word(byte& k1, byte& k2, byte& k3, byte& k4)  
+word Word(sbyte& k1, sbyte& k2, sbyte& k3, sbyte& k4)  
 {  
     word result(0x00000000);  
     word temp;  
@@ -75,14 +75,14 @@ word SubWord(word sw)
     {  
         int row = sw[i+7]*8 + sw[i+6]*4 + sw[i+5]*2 + sw[i+4];  
         int col = sw[i+3]*8 + sw[i+2]*4 + sw[i+1]*2 + sw[i];  
-        byte val = S_Box[row][col];  
+        sbyte val = S_Box[row][col];  
         for(int j=0; j<8; ++j)  
             temp[i+j] = val[j];  
     }  
     return temp;  
 } 
 
-void KeyExpansion(byte key[4*Nk], word w[4*(Nr+1)])  
+void KeyExpansion(sbyte key[4*Nk], word w[4*(Nr+1)])  
 {  
     word temp;  
     int i = 0;  
@@ -107,7 +107,7 @@ void KeyExpansion(byte key[4*Nk], word w[4*(Nr+1)])
 
 /* Encryption utils */
  
-void SubBytes(byte mtx[4*4])  
+void SubBytes(sbyte mtx[4*4])  
 {  
     for(int i=0; i<16; ++i)  
     {  
@@ -117,9 +117,9 @@ void SubBytes(byte mtx[4*4])
     }  
 }  
   
-void ShiftRows(byte mtx[4*4])  
+void ShiftRows(sbyte mtx[4*4])  
 {  
-    byte temp = mtx[4];  
+    sbyte temp = mtx[4];  
     for(int i=0; i<3; ++i)  
         mtx[i+4] = mtx[i+5];  
     mtx[7] = temp;  
@@ -135,14 +135,14 @@ void ShiftRows(byte mtx[4*4])
     mtx[12] = temp;  
 }  
   
-byte GFMul(byte a, byte b) {   
-    byte p = 0;  
-    byte hi_bit_set;  
+sbyte GFMul(sbyte a, sbyte b) {   
+    sbyte p = 0;  
+    sbyte hi_bit_set;  
     for (int counter = 0; counter < 8; counter++) {  
-        if ((b & byte(1)) != 0) {  
+        if ((b & sbyte(1)) != 0) {  
             p ^= a;  
         }  
-        hi_bit_set = (byte) (a & byte(0x80));  
+        hi_bit_set = (sbyte) (a & sbyte(0x80));  
         a <<= 1;  
         if (hi_bit_set != 0) {  
             a ^= 0x1b; 
@@ -152,9 +152,9 @@ byte GFMul(byte a, byte b) {
     return p;  
 }  
     
-void MixColumns(byte mtx[4*4])  
+void MixColumns(sbyte mtx[4*4])  
 {  
-    byte arr[4];  
+    sbyte arr[4];  
     for(int i=0; i<4; ++i)  
     {  
         for(int j=0; j<4; ++j)  
@@ -167,7 +167,7 @@ void MixColumns(byte mtx[4*4])
     }  
 }  
    
-void AddRoundKey(byte mtx[4*4], word k[4])  
+void AddRoundKey(sbyte mtx[4*4], word k[4])  
 {  
     for(int i=0; i<4; ++i)  
     {  
@@ -176,16 +176,16 @@ void AddRoundKey(byte mtx[4*4], word k[4])
         word k3 = (k[i] << 16) >> 24;  
         word k4 = (k[i] << 24) >> 24;  
           
-        mtx[i] = mtx[i] ^ byte(k1.to_ulong());  
-        mtx[i+4] = mtx[i+4] ^ byte(k2.to_ulong());  
-        mtx[i+8] = mtx[i+8] ^ byte(k3.to_ulong());  
-        mtx[i+12] = mtx[i+12] ^ byte(k4.to_ulong());  
+        mtx[i] = mtx[i] ^ sbyte(k1.to_ulong());  
+        mtx[i+4] = mtx[i+4] ^ sbyte(k2.to_ulong());  
+        mtx[i+8] = mtx[i+8] ^ sbyte(k3.to_ulong());  
+        mtx[i+12] = mtx[i+12] ^ sbyte(k4.to_ulong());  
     }  
 }  
 
 /* Decryption utils */
   
-void InvSubBytes(byte mtx[4*4])  
+void InvSubBytes(sbyte mtx[4*4])  
 {  
     for(int i=0; i<16; ++i)  
     {  
@@ -195,9 +195,9 @@ void InvSubBytes(byte mtx[4*4])
     }  
 }  
     
-void InvShiftRows(byte mtx[4*4])  
+void InvShiftRows(sbyte mtx[4*4])  
 {    
-    byte temp = mtx[7];  
+    sbyte temp = mtx[7];  
     for(int i=3; i>0; --i)  
         mtx[i+4] = mtx[i+3];  
     mtx[4] = temp;  
@@ -213,9 +213,9 @@ void InvShiftRows(byte mtx[4*4])
     mtx[15] = temp;  
 }  
   
-void InvMixColumns(byte mtx[4*4])  
+void InvMixColumns(sbyte mtx[4*4])  
 {  
-    byte arr[4];  
+    sbyte arr[4];  
     for(int i=0; i<4; ++i)  
     {  
         for(int j=0; j<4; ++j)  
@@ -230,7 +230,7 @@ void InvMixColumns(byte mtx[4*4])
 
 /* Routines */
 
-void encrypt(byte in[4*4], word w[4*(Nr+1)])  
+void encrypt(sbyte in[4*4], word w[4*(Nr+1)])  
 {  
     word key[4];  
     for(int i=0; i<4; ++i)  
@@ -254,7 +254,7 @@ void encrypt(byte in[4*4], word w[4*(Nr+1)])
     AddRoundKey(in, key);  
 }  
   
-void decrypt(byte in[4*4], word w[4*(Nr+1)])  
+void decrypt(sbyte in[4*4], word w[4*(Nr+1)])  
 {  
     word key[4];  
     for(int i=0; i<4; ++i)  

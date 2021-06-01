@@ -1,16 +1,14 @@
 #include <iostream>
-#include "utils.hpp"
-#include "aes.hpp"
-#include "io.hpp"
+#include "interface.hpp"
 
 int main()
 {
-    char array[17];
+    /*char array[17];
     char mot[17];
     char motu[17];
-    byte key[16];
-    byte plain[16];
-    byte plain2[16];
+    sbyte key[16];
+    sbyte plain[16];
+    sbyte plain2[16];
 
     safeinput(array);
     convertToHex(array, key);
@@ -49,6 +47,8 @@ int main()
 
     writeFile(plain);
 
+    readFile(plain);
+
     //Decrypt, output plaintext  
     decrypt(plain, w);  
     std::cout << "Decrypted plaintext:"<< std::endl;  
@@ -62,9 +62,10 @@ int main()
 
     convertToChar(plain, motu); 
     
-    std::cout << motu << std::endl;
+    std::cout << motu << std::endl;*/
 
-    std::cout << existence() << std::endl;
+
+    design("home");
 
     return 0;  
 }

@@ -25,3 +25,26 @@ void writeFile(byte* array)
 	}
 }
 
+void readFile(byte* array)
+{
+    std::fstream file;
+	file.open("./res/.sfdb", std::ios::in);
+	if (!file) {
+		std::cout << "No such file";
+	}
+	else {
+		char ch;
+
+		while (1) {
+			file >> ch;
+            if(ch=='\n')
+                std::cout << std::endl;
+			if (file.eof())
+				break;
+			std::cout << ch;
+		}
+
+	}
+	file.close();
+}
+

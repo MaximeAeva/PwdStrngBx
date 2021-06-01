@@ -11,7 +11,9 @@ OBJ_DIR =       obj
 PROJ_SRC_LIST = main.cpp \
 				utils.cpp \
 				aes.cpp \
-				io.cpp
+				io.cpp \
+				interface.cpp \
+				reader.cpp
 
 # objects
 PROJ_OBJ_LIST = $(PROJ_SRC_LIST:.cpp=.o)

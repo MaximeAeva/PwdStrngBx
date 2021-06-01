@@ -7,12 +7,12 @@
 #include <cstdlib>
 #include <bitset>
 
-typedef std::bitset<8> byte;   
+typedef std::bitset<8> sbyte;   
 
 void safeinput(char *array, int s = 17);
 
-void convertToChar(byte* input, char* array, int s = 16);
+void convertToChar(sbyte* input, char* array, int s = 16);
 
-void convertToHex(char* array, byte* output);
+void convertToHex(char* array, sbyte* output);
 
 #endif

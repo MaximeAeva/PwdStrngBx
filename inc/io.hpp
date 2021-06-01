@@ -9,6 +9,7 @@ typedef std::bitset<8> byte;
 
 bool existence();
 void writeFile(byte *array);
+void readFile(byte *array);
 
 
 #endif

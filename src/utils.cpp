@@ -15,7 +15,7 @@ void safeinput(char *array, int s)
     bufferEmptying();
 }
 
-void convertToChar(byte* input, char* array, int s)
+void convertToChar(sbyte* input, char* array, int s)
 {
     int i = 0;
     while(i<s) 
@@ -26,21 +26,12 @@ void convertToChar(byte* input, char* array, int s)
     array[i++] = '\0';
 }
 
-void convertToHex(char* array, byte* output)
+void convertToHex(char* array, sbyte* output)
 {
     int loop = 0;
     while(array[loop] != '\0')
     {
         output[loop] = std::bitset<8>(int(array[loop]));
         loop++;
-    }
-}
-
-void sequencer(char* array, int s)
-{
-    int c = 0;
-    while (c != '\n' && c != EOF)
-    {
-        c = getchar();
     }
 }
