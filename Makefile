@@ -1,6 +1,6 @@
 EXE  =	safeME	
 DEBUG =  yes
-CXX = g++	
+CXX = g++
 
 # dir
 SRC_DIR =       src
@@ -23,7 +23,7 @@ PROJ_SRC =		$(addprefix $(SRC_DIR)/, $(PROJ_SRC_LIST))
 PROJ_OBJ =		$(addprefix $(OBJ_DIR)/, $(PROJ_OBJ_LIST))
 
 ifeq ($(DEBUG),yes)
-CXXFLAGS = -std=c++11 -Wall -Wextra -ansi -pedantic -g -Weffc++ 
+CXXFLAGS = -std=c++17 -Wall -g -Wextra -ansi -pedantic -Weffc++ 
 else
 CXXFLAGS = -std=c++11 -w -Wall -Werror -s -O2
 endif
@@ -36,17 +36,16 @@ LDLIBS =
 
 all :		 	$(EXE)
 
-
 #Creating .exe with .o
 $(EXE) :    $(PROJ_OBJ)
-	@$(CXX) $(CXXFLAGS) -o $@ $^ $(LFLAGS) $(LDLIBS) 
+	@$(CXX) $^ -o $@  $(LFLAGS) $(LDLIBS) 
 	@echo "Compiling "$(EXE)
 
 
 # Creating .o with .cpp and libs
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp  
 	@$(shell mkdir obj)
-	@$(CXX) $(CXXFLAGS) -c -o $@ $< $(IFLAGS) 
+	@$(CXX) $(CXXFLAGS) $(IFLAGS) -c -o $@ $<  
 	@echo "Compiling" $<
 
 clean :
