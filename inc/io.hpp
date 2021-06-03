@@ -4,12 +4,14 @@
 #include <iostream>
 #include <fstream>
 #include <bitset>
+#include <string>
+#include <cmath>
 
-typedef std::bitset<8> byte;   
+typedef std::bitset<8> sbyte;   
 
 bool existence();
-void writeFile(byte *array);
-void readFile(byte *array);
+void writeFile(sbyte *array);
+bool readFile(sbyte *array, int line);
 
 
 #endif

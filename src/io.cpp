@@ -8,7 +8,7 @@ bool existence()
     return false;
 }
 
-void writeFile(byte* array)
+void writeFile(sbyte* array)
 {
     std::fstream file;
     file.open("./res/.sfdb", std::ios::app);
@@ -16,35 +16,78 @@ void writeFile(byte* array)
 		std::cout << "File not created!";
 	}
 	else {
-        file << '\n';
 		for(int i=0; i<16; ++i) 
         { 
             file << std::hex << array[i].to_ulong() << std::dec << " ";
         }
+		file << '\n';
 		file.close();
 	}
 }
 
-void readFile(byte* array)
+bool readFile(sbyte* array, int line)
 {
+	int crtLine = 0;
     std::fstream file;
 	file.open("./res/.sfdb", std::ios::in);
 	if (!file) {
 		std::cout << "No such file";
 	}
 	else {
-		char ch;
-
-		while (1) {
-			file >> ch;
-            if(ch=='\n')
-                std::cout << std::endl;
-			if (file.eof())
-				break;
-			std::cout << ch;
+		std::string s;
+		while (crtLine!=line) 
+		{
+			if(std::getline(file, s))
+				crtLine++;
+			else
+			{
+				return false;
+			}
 		}
-
+		std::getline(file, s);
+		int i = 0;
+		int numb, count = 0, arrayAdv = 0;
+		while(s[i] != '\0')
+		{
+			if(s[i] != ' ')
+				count++;
+			else
+			{
+				numb = 0;
+				for(int j = 1; j<count+1; j++)
+				{
+					switch(s[i-j])
+					{
+						case 'a':
+							numb += 10*pow(16, j-1);
+							break;
+						case 'b':
+							numb += 11*pow(16, j-1);
+							break;
+						case 'c':
+							numb += 12*pow(16, j-1);
+							break;
+						case 'd':
+							numb += 13*pow(16, j-1);
+							break;
+						case 'e':
+							numb += 14*pow(16, j-1);
+							break;
+						case 'f':
+							numb += 15*pow(16, j-1);
+							break;
+						default:
+							numb += int(s[i-j] - '0')*pow(16, j-1);
+					}
+				}
+				array[arrayAdv] = std::bitset<8>(int(numb));
+				arrayAdv++;
+				count = 0;
+			}
+			i++;	
+		}
 	}
 	file.close();
+	return true;
 }
 

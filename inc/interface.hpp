@@ -11,7 +11,10 @@
 #include "io.hpp"
 #include "utils.hpp"
 
+
+word w[4*(Nr+1)]; 
 char const * const menutxt[] = {"1: Home", "2: Search", "3: Add", "4: List", "Q: Quit"};
+char const * const registertxt[] = {"Content : ", "  User :  ", "Password :"};
 
 void design(std::string page);
 

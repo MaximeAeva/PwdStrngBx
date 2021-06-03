@@ -67,10 +67,10 @@ void colorMenu(std::string text, int line, int color)
     SetConsoleTextAttribute(hConsole, 15);
 }
 
-
-bool sideMenu(int current, int item, int LINES)
+void sideMenu(int current, int item, int LINES)
 {
     int tempo = 0;
+    int state = 0;
     if(item==current) item++;
     if(item>4) sideMenu(current, 0, LINES);
     else if(item<0) sideMenu(current, 4, LINES);
@@ -83,16 +83,22 @@ bool sideMenu(int current, int item, int LINES)
         else
            colorMenu(menutxt[i], LINES/3+i, 0); 
     }
-    while(true)
+    while(!state)
     {
         tempo++;
         if(GetAsyncKeyState(VK_UP) && tempo>10000)  
-            sideMenu(current, item-1, LINES);
+            state = 1;
         if(GetAsyncKeyState(VK_DOWN) && tempo>10000)   
-            sideMenu(current, item+1, LINES);
-        if(GetAsyncKeyState(VK_RIGHT) && tempo>2000) 
-        {
-            switch(item)
+            state = 2;
+        if(GetAsyncKeyState(VK_RIGHT)) 
+            state = 3;
+    }
+    if(state==1)
+        sideMenu(current, item-1, LINES);
+    else if(state==2)
+        sideMenu(current, item+1, LINES);
+    else
+        switch(item)
             {
                 case 0:
                     design("homelog");
@@ -107,12 +113,8 @@ bool sideMenu(int current, int item, int LINES)
                     design("list");
                     break;
                 default:
-                    return true;
-                    break;
-            }          
-        }
-    }
-    return false;
+                    return;
+            }
 }
 
 void design(std::string page)
@@ -124,11 +126,10 @@ void design(std::string page)
 
     border(COLS, LINES);
 
-    char array[17];
-    char cmd[17];
-
     if(page=="home")
     {
+        char array[17];
+        sbyte key[17];
         //Title part
         Reader r("Welcome");
         for(int i = 0; i<int(r.titleSize.height); i++) 
@@ -144,7 +145,8 @@ void design(std::string page)
         //Interactions
         gotoxy(int(COLS/2)-8, int(LINES/2)+1);
         safeinput(array);
-        design("homelog");
+        convertToHex(array, key);
+        KeyExpansion(key, w);
     }
     else if(page=="homelog")
     {
@@ -155,15 +157,15 @@ void design(std::string page)
             gotoxy(int((COLS-2-r.titleSize.width)/2), i+1);
             std::cout << r.text[i];
         }
-
-        if(sideMenu(0, 1, LINES));
-        {
-            quit();
-            return;
-        }
+        sideMenu(0, 1, LINES);
+        quit();
+        return;
     }
     else if(page=="search")
     {
+        char cmd[17] = {};
+        char plain[17] = {};
+        sbyte read[16] = {};
         //Title part
         Reader r("Search");
         for(int i = 0; i<int(r.titleSize.height); i++) 
@@ -172,35 +174,38 @@ void design(std::string page)
             std::cout << r.text[i];
         }
 
-        //Text
-        gotoxy(int(COLS/2-16), int(LINES/3));
-        std::cout << "1: Home     2: Add     q: Quit";
-
-        gotoxy(int(COLS/2-6), int(LINES/2));
-        std::cout << "Command : ";
+        gotoxy(int(COLS/2-10), int(LINES/3));
+        std::cout << "->";
 
         //Interactions
-        gotoxy(int(COLS/2)-8, int(LINES/2)+1);
+        gotoxy(int(COLS/2)-8, int(LINES/3));
         safeinput(cmd);
-        if(cmd[0]=='1')
-            design("homelog");
-        else if(cmd[0]=='2')
-            design("add");
-        else if(cmd[0]=='q')
+
+        int i = 0;
+        while(readFile(read, i))
         {
-            std::cout << "\033[2J";
-            system("cls");
-            gotoxy(0, 0);
-            return;
+            decrypt(read, w);
+            convertToChar(read, plain);
+            if(strncmp(plain, cmd, 5) == 0) 
+            {
+                for(int j = 0; j<3; j++) 
+                {
+                    readFile(read, i+j);
+                    decrypt(read, w);
+                    convertToChar(read, plain);
+                    gotoxy(int(COLS/2-6), int(LINES/2)+3*j);
+                    std::cout << registertxt[j];
+                    gotoxy(int(COLS/2-6), int(LINES/2)+(3*j)+1);
+                    std::cout << plain;
+                }
+            }
+            i+=3;
         }
-        else design("search");
-            
+
+        getchar();
     }
     else if(page=="add")
     {
-        char content[17];
-        char user[17];
-        char pwd[17];
         //Title part
         Reader r("Add");
         for(int i = 0; i<int(r.titleSize.height); i++) 
@@ -209,28 +214,44 @@ void design(std::string page)
             std::cout << r.text[i];
         }
 
-        //Text
-        gotoxy(int(COLS/2-18), int(LINES/3));
-        std::cout << "1: Home     2: Search     q: Quit ";
-
-        gotoxy(int(COLS/2-6), int(LINES/2));
-        std::cout << "Command : ";
-
-        //Interactions
-        gotoxy(int(COLS/2)-8, int(LINES/2)+1);
-        safeinput(cmd);
-        if(cmd[0]=='1')
-            design("homelog");
-        else if(cmd[0]=='2')
-            design("search");
-        else if(cmd[0]=='q')
+        for(int i = 0; i<3; i++)
         {
-            std::cout << "\033[2J";
-            system("cls");
-            gotoxy(0, 0);
-            return;
+            char content[17] = {};
+            sbyte hexContent[16] = {};
+            gotoxy(int(COLS/2-6), int(LINES/2));
+            std::cout << registertxt[i];
+
+            //Interactions
+            gotoxy(int(COLS/2)-8, int(LINES/2)+1);
+            safeinput(content);
+            convertToHex(content, hexContent);
+            encrypt(hexContent, w);
+            writeFile(hexContent);
         }
-        else design("add");
-            
     }
+    else if(page=="list")
+    {
+        char plain[17] = {};
+        sbyte read[16] = {};
+        //Title part
+        Reader r("List");
+        for(int i = 0; i<int(r.titleSize.height); i++) 
+        {
+            gotoxy(int((COLS-2-r.titleSize.width)/2), i+1);
+            std::cout << r.text[i];
+        }
+        int i = 0;
+        while(readFile(read, i))
+        {
+            readFile(read, i);
+            decrypt(read, w);
+            convertToChar(read, plain);
+            gotoxy(int(COLS/2-9), int(LINES/3)+i/3);
+            std::cout << plain;
+            i+=3;
+        }
+
+        getchar();
+    }
+    design("homelog");
 }

@@ -15,4 +15,6 @@ void convertToChar(sbyte* input, char* array, int s = 16);
 
 void convertToHex(char* array, sbyte* output);
 
+void bufferEmptying();
+
 #endif
