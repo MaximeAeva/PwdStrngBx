@@ -1,5 +1,7 @@
 #include "interface.hpp"
 
+word w[4*(Nr+1)] = {}; 
+
 void gotoxy(int x, int y)
 {
     COORD coord;
