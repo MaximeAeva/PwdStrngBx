@@ -229,7 +229,7 @@ void design(std::string page)
             i+=3;
         }
 
-        getchar();
+        getch();
     }
     else if(page=="add")
     {
@@ -277,7 +277,7 @@ void design(std::string page)
             i+=3;
         }
 
-        getchar();
+        getch();
     }
     design("homelog");
 }
