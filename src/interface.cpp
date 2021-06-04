@@ -188,9 +188,9 @@ void design(std::string page)
         {
             decrypt(read, w);
             convertToChar(read, plain);
-            if(strncmp(plain, cmd, 5) == 0) 
+            if(strcmp(plain, cmd) == 0) 
             {
-                for(int j = 0; j<3; j++) 
+                for(int j = 1; j<3; j++) 
                 {
                     readFile(read, i+j);
                     decrypt(read, w);
@@ -199,6 +199,7 @@ void design(std::string page)
                     std::cout << registertxt[j];
                     gotoxy(int(COLS/2-6), int(LINES/2)+(3*j)+1);
                     std::cout << plain;
+                    
                 }
             }
             i+=3;
@@ -233,8 +234,6 @@ void design(std::string page)
     }
     else if(page=="list")
     {
-        char plain[17] = {};
-        sbyte read[16] = {};
         //Title part
         Reader r("List");
         for(int i = 0; i<int(r.titleSize.height); i++) 
@@ -242,13 +241,14 @@ void design(std::string page)
             gotoxy(int((COLS-2-r.titleSize.width)/2), i+1);
             std::cout << r.text[i];
         }
+        sbyte read[16] = {};
         int i = 0;
         while(readFile(read, i))
         {
-            readFile(read, i);
+            char plain[17] = {};
             decrypt(read, w);
             convertToChar(read, plain);
-            gotoxy(int(COLS/2-9), int(LINES/3)+i/3);
+            gotoxy(int(COLS/2-9), int(LINES/3)+int(i/3));
             std::cout << plain;
             i+=3;
         }

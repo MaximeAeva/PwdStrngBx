@@ -2,7 +2,7 @@
 > Gather account in order to remind password/username in case of need
 
 <p align="center">
-  <img src="https://github.com/MaximeAeva/PwdStrngBx/blob/master/res/hello.PNG">
+  <img src="https://github.com/MaximeAeva/PwdStrngBx/blob/master/res/Hello.PNG">
 </p>
 
 <p align="center">
