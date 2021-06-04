@@ -5,7 +5,8 @@
 #include <iostream>
 #include <windows.h>
 #include <cstdlib> 
-#include <vector> 
+#include <vector>
+#include <conio.h>
 #include "reader.hpp"
 #include "aes.hpp"
 #include "io.hpp"

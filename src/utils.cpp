@@ -11,8 +11,9 @@ void bufferEmptying()
 
 void safeinput(char *array, int s)
 {
+    std::cin.sync();
     std::cin.get(array, s);
-    bufferEmptying();
+    //std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
 }
 
 void convertToChar(sbyte* input, char* array, int s)

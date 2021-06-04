@@ -71,8 +71,8 @@ void colorMenu(std::string text, int line, int color)
 
 void sideMenu(int current, int item, int LINES)
 {
-    int tempo = 0;
     int state = 0;
+    char array[17] = {};
     if(item==current) item++;
     if(item>4) sideMenu(current, 0, LINES);
     else if(item<0) sideMenu(current, 4, LINES);
@@ -87,19 +87,29 @@ void sideMenu(int current, int item, int LINES)
     }
     while(!state)
     {
-        tempo++;
-        if(GetAsyncKeyState(VK_UP) && tempo>10000)  
-            state = 1;
-        if(GetAsyncKeyState(VK_DOWN) && tempo>10000)   
-            state = 2;
-        if(GetAsyncKeyState(VK_RIGHT)) 
-            state = 3;
+        int ch = _getch ();
+        if (ch == 0 || ch == 224)
+        {
+            switch (_getch ())
+            {
+                case 72:
+                    state = 1;
+                    break;
+                case 80:
+                    state = 2;
+                    break;
+                case 77:
+                    state = 3;
+                    break;
+            }
+        }
     }
     if(state==1)
         sideMenu(current, item-1, LINES);
     else if(state==2)
         sideMenu(current, item+1, LINES);
     else
+    { 
         switch(item)
             {
                 case 0:
@@ -117,6 +127,7 @@ void sideMenu(int current, int item, int LINES)
                 default:
                     return;
             }
+    }
 }
 
 void design(std::string page)
@@ -130,8 +141,8 @@ void design(std::string page)
 
     if(page=="home")
     {
-        char array[17];
-        sbyte key[17];
+        char array[17] = {};
+        sbyte key[17] = {};
         //Title part
         Reader r("Welcome");
         for(int i = 0; i<int(r.titleSize.height); i++) 
@@ -181,6 +192,7 @@ void design(std::string page)
 
         //Interactions
         gotoxy(int(COLS/2)-8, int(LINES/3));
+
         safeinput(cmd);
 
         int i = 0;
@@ -190,7 +202,7 @@ void design(std::string page)
             convertToChar(read, plain);
             if(strcmp(plain, cmd) == 0) 
             {
-                for(int j = 1; j<3; j++) 
+                for(int j = 1; j<2; j++) 
                 {
                     readFile(read, i+j);
                     decrypt(read, w);
@@ -201,6 +213,18 @@ void design(std::string page)
                     std::cout << plain;
                     
                 }
+                readFile(read, i+2);
+                decrypt(read, w);
+                convertToChar(read, plain);
+                const char* output = plain;
+                const size_t len = strlen(output) + 1;
+                HGLOBAL hMem =  GlobalAlloc(GMEM_MOVEABLE, len);
+                memcpy(GlobalLock(hMem), output, len);
+                GlobalUnlock(hMem);
+                OpenClipboard(0);
+                EmptyClipboard();
+                SetClipboardData(CF_TEXT, hMem);
+                CloseClipboard();
             }
             i+=3;
         }
