@@ -42,6 +42,8 @@ void border(int COLS, int LINES)
 
 void quit()
 {
+    OpenClipboard(0);
+    EmptyClipboard();
     std::cout << "\033[2J";
     system("cls");
     gotoxy(0, 0);
@@ -69,13 +71,24 @@ void colorMenu(std::string text, int line, int color)
     SetConsoleTextAttribute(hConsole, 15);
 }
 
-void sideMenu(int current, int item, int LINES)
+void sideMenu(int current, int item, int LINES, int inter = 0)
 {
     int state = 0;
     char array[17] = {};
-    if(item==current) item++;
-    if(item>4) sideMenu(current, 0, LINES);
-    else if(item<0) sideMenu(current, 4, LINES);
+    if(item>4) 
+    {
+        if(!current)
+            item = 1;
+        else
+            item = 0;
+    }
+    else if(item<0)
+    {
+        if(current == 4)
+            item = 3;
+        else
+            item = 4;
+    }
     for(int i = 0; i<5; i++)
     {
         if(i==current)  
@@ -85,6 +98,7 @@ void sideMenu(int current, int item, int LINES)
         else
            colorMenu(menutxt[i], LINES/3+i, 0); 
     }
+    if(inter) return;
     while(!state)
     {
         int ch = _getch ();
@@ -105,9 +119,19 @@ void sideMenu(int current, int item, int LINES)
         }
     }
     if(state==1)
-        sideMenu(current, item-1, LINES);
+    {
+        if(item-1==current)
+            sideMenu(current, item-2, LINES);
+        else
+            sideMenu(current, item-1, LINES);
+    }
     else if(state==2)
-        sideMenu(current, item+1, LINES);
+    {
+        if(item+1==current)
+            sideMenu(current, item+2, LINES);
+        else
+            sideMenu(current, item+1, LINES);
+    }
     else
     { 
         switch(item)
@@ -137,10 +161,14 @@ void design(std::string page)
     int COLS = csbiInfo.dwSize.X;
     int LINES = csbiInfo.srWindow.Bottom;
 
+    int parm1;
+    int parm2;
+
     border(COLS, LINES);
 
     if(page=="home")
     {
+        parm2 = -1;
         char array[17] = {};
         sbyte key[17] = {};
         //Title part
@@ -163,6 +191,8 @@ void design(std::string page)
     }
     else if(page=="homelog")
     {
+        parm1 = 0;
+        parm2 = 1;
         //Title part
         Reader r("Home");
         for(int i = 0; i<int(r.titleSize.height); i++) 
@@ -170,12 +200,11 @@ void design(std::string page)
             gotoxy(int((COLS-2-r.titleSize.width)/2), i+1);
             std::cout << r.text[i];
         }
-        sideMenu(0, 1, LINES);
-        quit();
-        return;
     }
     else if(page=="search")
     {
+        parm1 = -1;
+        parm2 = 1;
         char cmd[17] = {};
         char plain[17] = {};
         sbyte read[16] = {};
@@ -228,11 +257,11 @@ void design(std::string page)
             }
             i+=3;
         }
-
-        getch();
     }
     else if(page=="add")
     {
+        parm1 = -1;
+        parm2 = 0;
         //Title part
         Reader r("Add");
         for(int i = 0; i<int(r.titleSize.height); i++) 
@@ -245,11 +274,11 @@ void design(std::string page)
         {
             char content[17] = {};
             sbyte hexContent[16] = {};
-            gotoxy(int(COLS/2-6), int(LINES/2));
+            gotoxy(int(COLS/2-6), int(LINES/3)+3*i);
             std::cout << registertxt[i];
 
             //Interactions
-            gotoxy(int(COLS/2)-8, int(LINES/2)+1);
+            gotoxy(int(COLS/2)-8, int(LINES/3)+1+3*i);
             safeinput(content);
             convertToHex(content, hexContent);
             encrypt(hexContent, w);
@@ -258,6 +287,8 @@ void design(std::string page)
     }
     else if(page=="list")
     {
+        parm1 = 3;
+        parm2 = 0;
         //Title part
         Reader r("List");
         for(int i = 0; i<int(r.titleSize.height); i++) 
@@ -265,6 +296,7 @@ void design(std::string page)
             gotoxy(int((COLS-2-r.titleSize.width)/2), i+1);
             std::cout << r.text[i];
         }
+
         sbyte read[16] = {};
         int i = 0;
         while(readFile(read, i))
@@ -276,8 +308,9 @@ void design(std::string page)
             std::cout << plain;
             i+=3;
         }
-
-        getch();
     }
-    design("homelog");
+    if(parm2!=-1) 
+        sideMenu(parm1, parm2, LINES);
+    quit();
+    return;
 }

@@ -3,8 +3,8 @@
 
 int main()
 {
-    
     design("home");
+    design("homelog");
 
     return 0;  
 }

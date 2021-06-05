@@ -1,19 +1,9 @@
 #include "utils.hpp"
 
-void bufferEmptying()
-{
-    int c = 0;
-    while (c != '\n' && c != EOF)
-    {
-        c = getchar();
-    }
-}
-
 void safeinput(char *array, int s)
 {
     std::cin.sync();
     std::cin.get(array, s);
-    //std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
 }
 
 void convertToChar(sbyte* input, char* array, int s)
