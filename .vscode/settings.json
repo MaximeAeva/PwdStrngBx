@@ -52,6 +52,7 @@
         "xlocmon": "cpp",
         "xloctime": "cpp",
         "cctype": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "random": "cpp"
     }
 }

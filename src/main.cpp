@@ -3,6 +3,7 @@
 
 int main()
 {
+    initializeWindowSize();
     design("home");
     design("homelog");
 

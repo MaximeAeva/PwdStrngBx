@@ -26,3 +26,5 @@ void convertToHex(char* array, sbyte* output)
         loop++;
     }
 }
+
+

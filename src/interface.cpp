@@ -49,7 +49,7 @@ void quit()
     gotoxy(0, 0);
 }
 
-void colorMenu(std::string text, int line, int color)
+void colorMenu(std::string text, int col, int line, int color)
 {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     switch(color)
@@ -66,16 +66,16 @@ void colorMenu(std::string text, int line, int color)
             break;
         
     }
-    gotoxy(1, line);
+    gotoxy(col, line);
     std::cout << text;
     SetConsoleTextAttribute(hConsole, 15);
 }
 
-void sideMenu(int current, int item, int LINES, int inter = 0)
+void sideMenu(int current, int item, int inter = 0)
 {
     int state = 0;
     char array[17] = {};
-    if(item>4) 
+    if(item>menuSize-1) 
     {
         if(!current)
             item = 1;
@@ -84,19 +84,19 @@ void sideMenu(int current, int item, int LINES, int inter = 0)
     }
     else if(item<0)
     {
-        if(current == 4)
-            item = 3;
+        if(current == menuSize-1)
+            item = menuSize-2;
         else
-            item = 4;
+            item = menuSize-1;
     }
-    for(int i = 0; i<5; i++)
+    for(int i = 0; i<menuSize; i++)
     {
         if(i==current)  
-            colorMenu(menutxt[i], LINES/3+i, 2);
+            colorMenu(menutxt[i], 1, LINES/3+i, 2);
         else if(i==item)
-            colorMenu(menutxt[i], LINES/3+i, 1);
+            colorMenu(menutxt[i], 1, LINES/3+i, 1);
         else
-           colorMenu(menutxt[i], LINES/3+i, 0); 
+            colorMenu(menutxt[i], 1, LINES/3+i, 0); 
     }
     if(inter) return;
     while(!state)
@@ -121,16 +121,16 @@ void sideMenu(int current, int item, int LINES, int inter = 0)
     if(state==1)
     {
         if(item-1==current)
-            sideMenu(current, item-2, LINES);
+            sideMenu(current, item-2);
         else
-            sideMenu(current, item-1, LINES);
+            sideMenu(current, item-1);
     }
     else if(state==2)
     {
         if(item+1==current)
-            sideMenu(current, item+2, LINES);
+            sideMenu(current, item+2);
         else
-            sideMenu(current, item+1, LINES);
+            sideMenu(current, item+1);
     }
     else
     { 
@@ -148,9 +148,89 @@ void sideMenu(int current, int item, int LINES, int inter = 0)
                 case 3:
                     design("list");
                     break;
+                case 4:
+                    design("modify");
+                    break;
+                case 5:
+                    design("generate");
+                    break;
                 default:
                     return;
             }
+    }
+}
+
+void genMenu(int current, int item, bool* opt, int inter = 0)
+{
+    int state = 0;
+    char array[17] = {};
+    if(item>4) 
+    {
+        if(!current)
+            item = 1;
+        else
+            item = 0;
+    }
+    else if(item<0)
+    {
+        if(current == 4)
+            item = 3;
+        else
+            item = 4;
+    }
+    for(int i = 0; i<5; i++)
+    {
+        if(i==item)
+            colorMenu(gentxt[i], COLS/3, LINES/3+i, 1);
+        else
+            colorMenu(gentxt[i], COLS/3, LINES/3+i, 0); 
+
+        gotoxy(COLS/3+20, LINES/3+i);
+        if(i<4 && opt[i]) std::cout << "V";
+        else if(i<4 && !opt[i]) std::cout << "X";
+    }
+    if(inter) return;
+    while(!state)
+    {
+        int ch = _getch ();
+        if (ch == 0 || ch == 224)
+        {
+            switch (_getch ())
+            {
+                case 72:
+                    state = 1;
+                    break;
+                case 80:
+                    state = 2;
+                    break;
+                case 77:
+                    state = 3;
+                    break;
+            }
+        }
+    }
+    if(state==1)
+    {
+        if(item-1==current)
+            genMenu(current, item-2, opt);
+        else
+            genMenu(current, item-1, opt);
+    }
+    else if(state==2)
+    {
+        if(item+1==current)
+            genMenu(current, item+2, opt);
+        else
+            genMenu(current, item+1, opt);
+    }
+    else
+    {
+        if(item<4)
+        { 
+            opt[item] = !opt[item];
+            genMenu(current, item, opt);
+        }
+        else return;
     }
 }
 
@@ -158,8 +238,8 @@ void design(std::string page)
 {
     CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbiInfo);
-    int COLS = csbiInfo.dwSize.X;
-    int LINES = csbiInfo.srWindow.Bottom;
+    COLS = csbiInfo.dwSize.X;
+    LINES = csbiInfo.srWindow.Bottom;
 
     int parm1;
     int parm2;
@@ -223,11 +303,13 @@ void design(std::string page)
         gotoxy(int(COLS/2)-8, int(LINES/3));
 
         safeinput(cmd);
+        convertToHex(cmd, read);
+        encrypt(read, w);
+        convertToChar(read, cmd);
 
         int i = 0;
         while(readFile(read, i))
         {
-            decrypt(read, w);
             convertToChar(read, plain);
             if(strcmp(plain, cmd) == 0) 
             {
@@ -245,6 +327,8 @@ void design(std::string page)
                 readFile(read, i+2);
                 decrypt(read, w);
                 convertToChar(read, plain);
+
+                //To clipBoard
                 const char* output = plain;
                 const size_t len = strlen(output) + 1;
                 HGLOBAL hMem =  GlobalAlloc(GMEM_MOVEABLE, len);
@@ -309,8 +393,99 @@ void design(std::string page)
             i+=3;
         }
     }
+    else if(page=="modify")
+    {
+        parm1 = -1;
+        parm2 = 1;
+        char cmd[17] = {};
+        char plain[17] = {};
+        sbyte read[16] = {};
+        //Title part
+        Reader r("Modify");
+        for(int i = 0; i<int(r.titleSize.height); i++) 
+        {
+            gotoxy(int((COLS-2-r.titleSize.width)/2), i+1);
+            std::cout << r.text[i];
+        }
+
+        gotoxy(int(COLS/2-10), int(LINES/3));
+        std::cout << "->";
+
+        //Interactions
+        gotoxy(int(COLS/2)-8, int(LINES/3));
+
+        safeinput(cmd);
+        convertToHex(cmd, read);
+        encrypt(read, w);
+        convertToChar(read, cmd);
+
+        int i = 0;
+        while(readFile(read, i))
+        {
+            convertToChar(read, plain);
+            if(strcmp(plain, cmd) == 0) 
+            {
+                for(int j = 1; j<2; j++) 
+                {
+                    readFile(read, i+j);
+                    decrypt(read, w);
+                    convertToChar(read, plain);
+                    gotoxy(int(COLS/2-6), int(LINES/2)+3*j);
+                    std::cout << registertxt[j];
+                    gotoxy(int(COLS/2-6), int(LINES/2)+(3*j)+1);
+                    std::cout << plain;
+                    
+                }
+                readFile(read, i+2);
+                decrypt(read, w);
+                convertToChar(read, plain);
+
+                //To clipBoard
+                const char* output = plain;
+                const size_t len = strlen(output) + 1;
+                HGLOBAL hMem =  GlobalAlloc(GMEM_MOVEABLE, len);
+                memcpy(GlobalLock(hMem), output, len);
+                GlobalUnlock(hMem);
+                OpenClipboard(0);
+                EmptyClipboard();
+                SetClipboardData(CF_TEXT, hMem);
+                CloseClipboard();
+            }
+            i+=3;
+        }
+    }
+    else if(page=="generate")
+    {
+        parm1 = -1;
+        parm2 = 5;
+        sideMenu(parm1, parm2, 1);
+        bool opt[4] = {true, true, true, true};
+        //Title part
+        Reader r("Generate");
+        for(int i = 0; i<int(r.titleSize.height); i++) 
+        {
+            gotoxy(int((COLS-2-r.titleSize.width)/2), i+1);
+            std::cout << r.text[i];
+        }
+
+        genMenu(-1, 0, opt);
+        std::uniform_int_distribution<int> distribution(1,6);
+        int dice_roll = distribution(generator);
+        gotoxy(int(COLS/2)-8, int(LINES/3)+7);
+        for(int l = 0; l<4; l++)
+            std::cout << opt[l] << " ";
+
+    }
     if(parm2!=-1) 
-        sideMenu(parm1, parm2, LINES);
+        sideMenu(parm1, parm2);
     quit();
     return;
+}
+
+void initializeWindowSize()
+{
+    system("mode 80,25"); 
+    SMALL_RECT WinRect = {0, 0, 80, 20}; 
+    SMALL_RECT* WinSize = &WinRect;
+    SetConsoleWindowInfo(GetStdHandle(STD_OUTPUT_HANDLE), true, WinSize); 
 }

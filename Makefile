@@ -1,4 +1,4 @@
-EXE  =	safeME	
+EXE  =	safeME.exe	
 DEBUG =  yes
 CXX = g++
 
@@ -8,22 +8,27 @@ INC_DIR =       inc
 OBJ_DIR =       obj
 
 # sources
-PROJ_SRC_LIST = main.cpp \
-				utils.cpp \
+PROJ_SRC_LIST = utils.cpp \
 				aes.cpp \
 				io.cpp \
 				interface.cpp \
 				reader.cpp
+
+# headers
+PROJ_INC_LIST = $(PROJ_SRC_LIST:.cpp=.hpp)
+
+PROJ_SRC_LIST += main.cpp
 
 # objects
 PROJ_OBJ_LIST = $(PROJ_SRC_LIST:.cpp=.o)
 
 #paths
 PROJ_SRC =		$(addprefix $(SRC_DIR)/, $(PROJ_SRC_LIST))
+PROJ_INC =		$(addprefix $(SRC_INC)/, $(PROJ_INC_LIST))
 PROJ_OBJ =		$(addprefix $(OBJ_DIR)/, $(PROJ_OBJ_LIST))
 
 ifeq ($(DEBUG),yes)
-CXXFLAGS = -std=c++17 -Wall -g -Wextra -ansi -pedantic -Weffc++ 
+CXXFLAGS = -std=c++17 -Wall -g -Wextra #-ansi -pedantic -Weffc++ 
 else
 CXXFLAGS = -std=c++11 -w -Wall -Werror -s -O2
 endif
@@ -38,14 +43,15 @@ all :		 	$(EXE)
 
 #Creating .exe with .o
 $(EXE) :    $(PROJ_OBJ)
-	@$(CXX) $^ -o $@  $(LFLAGS) $(LDLIBS) 
+	@$(CXX) $(LFLAGS) $(LDLIBS) $^ -o $@   
 	@echo "Compiling "$(EXE)
+	
 
 
 # Creating .o with .cpp and libs
-$(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp  
+$(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 	@$(shell mkdir obj)
-	@$(CXX) $(CXXFLAGS) $(IFLAGS) -c -o $@ $<  
+	@$(CXX) $(CXXFLAGS) $(IFLAGS) -c $< -o $@   
 	@echo "Compiling" $<
 
 clean :
