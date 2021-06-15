@@ -327,7 +327,10 @@ void design(std::string page)
                 readFile(read, i+2);
                 decrypt(read, w);
                 convertToChar(read, plain);
-
+                gotoxy(int(COLS/2-6), int(LINES/2)+(9));
+                std::cout << "Password :";
+                gotoxy(int(COLS/2-6), int(LINES/2)+(9)+1);
+                std::cout << "Password copied to clipboard !";
                 //To clipBoard
                 const char* output = plain;
                 const size_t len = strlen(output) + 1;
@@ -458,6 +461,8 @@ void design(std::string page)
     {
         parm1 = -1;
         parm2 = 5;
+        char cmd[17] = {};
+        char p[17] = {};
         sideMenu(parm1, parm2, 1);
         bool opt[4] = {true, true, true, true};
         //Title part
@@ -469,11 +474,63 @@ void design(std::string page)
         }
 
         genMenu(-1, 0, opt);
-        std::uniform_int_distribution<int> distribution(1,6);
-        int dice_roll = distribution(generator);
+        gotoxy(COLS/3, LINES/3+5);
+        std::cout << "Size : ";
+        safeinput(cmd, 3);
+        int siz = atoi(cmd);
+        if(siz<5) siz = 5;
+        else if(siz > 16) siz = 16;
+
+        std::uniform_int_distribution<int> distribution(0, 3);
+
+        std::uniform_int_distribution<int> dUp(65,90);
+        std::uniform_int_distribution<int> dLow(97,122);
+        std::uniform_int_distribution<int> dNumbers(48,57);
+        std::uniform_int_distribution<int> spChara(33,47);
+        std::uniform_int_distribution<int> spCharb(58,64);
+        std::uniform_int_distribution<int> spCharc(91,96);
+        std::uniform_int_distribution<int> spChard(123,126);
+        std::uniform_int_distribution<int> spChar(1,4);
+
+        int dice_roll;
+        int choice[5] = {};
+        for(int k = 0; k < siz; k++)
+        {
+            dice_roll = distribution(generator);
+            while(!opt[dice_roll])
+                dice_roll = distribution(generator);
+            switch (dice_roll)
+            {
+                case 0:
+                    choice[0] = dUp(generator);
+                    break;
+                case 1:
+                    choice[0] = dLow(generator);
+                    break;
+                case 2:
+                    choice[0] = dNumbers(generator);
+                    break;
+                case 3:
+                    choice[1] = spChara(generator);
+                    choice[2] = spCharb(generator);
+                    choice[3] = spCharc(generator);
+                    choice[4] = spChard(generator);
+                    choice[0] = choice[spChar(generator)];
+                    break;
+            }
+            p[k] = char(choice[0]);
+        }
         gotoxy(int(COLS/2)-8, int(LINES/3)+7);
-        for(int l = 0; l<4; l++)
-            std::cout << opt[l] << " ";
+        const char* output = p;
+        const size_t len = strlen(output) + 1;
+        HGLOBAL hMem =  GlobalAlloc(GMEM_MOVEABLE, len);
+        memcpy(GlobalLock(hMem), output, len);
+        GlobalUnlock(hMem);
+        OpenClipboard(0);
+        EmptyClipboard();
+        SetClipboardData(CF_TEXT, hMem);
+        CloseClipboard();
+        std::cout << "Copied to clipboard !";
 
     }
     if(parm2!=-1) 

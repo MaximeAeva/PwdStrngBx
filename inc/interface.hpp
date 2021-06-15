@@ -21,6 +21,7 @@ char const * const menutxt[] = {"1: Home", "2: Search", "3: Add", "4: List", "5:
 char const * const gentxt[] = {"Upper case", "Lower case", "Numbers", "Special characters", "Generate"};
 char const * const registertxt[] = {"Content : ", "  User :  ", "Password :"};
 
+
 void design(std::string page);
 
 void initializeWindowSize();
