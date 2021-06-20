@@ -10,8 +10,8 @@
 typedef std::bitset<8> sbyte;   
 
 bool existence();
-void writeFile(sbyte *array);
-bool readFile(sbyte *array, int line);
+void writeFile(sbyte *array, char * f = "./res/.sfdb");
+bool readFile(sbyte *array, int line, char * f = "./res/.sfdb");
 
 
 #endif

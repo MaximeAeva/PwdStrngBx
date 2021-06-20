@@ -8,10 +8,10 @@ bool existence()
     return false;
 }
 
-void writeFile(sbyte* array)
+void writeFile(sbyte* array, char * f)
 {
     std::fstream file;
-    file.open("./res/.sfdb", std::ios::app);
+    file.open(f, std::ios::app);
 	if (!file) {
 		std::cout << "File not created!";
 	}
@@ -25,11 +25,11 @@ void writeFile(sbyte* array)
 	}
 }
 
-bool readFile(sbyte* array, int line)
+bool readFile(sbyte* array, int line, char * f)
 {
 	int crtLine = 0;
     std::fstream file;
-	file.open("./res/.sfdb", std::ios::in);
+	file.open(f, std::ios::in);
 	if (!file) {
 		std::cout << "No such file";
 	}

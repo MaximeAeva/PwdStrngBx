@@ -341,6 +341,8 @@ void design(std::string page)
                 EmptyClipboard();
                 SetClipboardData(CF_TEXT, hMem);
                 CloseClipboard();
+
+                break;
             }
             i+=3;
         }
@@ -403,6 +405,8 @@ void design(std::string page)
         char cmd[17] = {};
         char plain[17] = {};
         sbyte read[16] = {};
+        char content[17] = {};
+        sbyte hexContent[16] = {};
         //Title part
         Reader r("Modify");
         for(int i = 0; i<int(r.titleSize.height); i++) 
@@ -428,34 +432,28 @@ void design(std::string page)
             convertToChar(read, plain);
             if(strcmp(plain, cmd) == 0) 
             {
-                for(int j = 1; j<2; j++) 
+                for(int k = 0; k<3; k++)
                 {
-                    readFile(read, i+j);
-                    decrypt(read, w);
-                    convertToChar(read, plain);
-                    gotoxy(int(COLS/2-6), int(LINES/2)+3*j);
-                    std::cout << registertxt[j];
-                    gotoxy(int(COLS/2-6), int(LINES/2)+(3*j)+1);
-                    std::cout << plain;
-                    
-                }
-                readFile(read, i+2);
-                decrypt(read, w);
-                convertToChar(read, plain);
+                    char content[17] = {};
+                    sbyte hexContent[16] = {};
+                    gotoxy(int(COLS/2-6), int(LINES/3)+3*k);
+                    std::cout << registertxt[k];
 
-                //To clipBoard
-                const char* output = plain;
-                const size_t len = strlen(output) + 1;
-                HGLOBAL hMem =  GlobalAlloc(GMEM_MOVEABLE, len);
-                memcpy(GlobalLock(hMem), output, len);
-                GlobalUnlock(hMem);
-                OpenClipboard(0);
-                EmptyClipboard();
-                SetClipboardData(CF_TEXT, hMem);
-                CloseClipboard();
+                    //Interactions
+                    gotoxy(int(COLS/2)-8, int(LINES/3)+1+3*k);
+                    safeinput(content);
+                    convertToHex(content, hexContent);
+                    encrypt(hexContent, w);
+                    writeFile(hexContent, "./res/copy.sfdb");
+                }
+                i+=2;
             }
-            i+=3;
+            else
+                writeFile(read, "./res/copy.sfdb");
+            i++;
         }
+        std::remove("./res/.sfdb");
+        std::rename("./res/copy.sfdb", "./res/.sfdb");
     }
     else if(page=="generate")
     {
