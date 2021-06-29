@@ -35,7 +35,7 @@ bool readFile(sbyte* array, int line, char * f)
 	}
 	else {
 		std::string s;
-		while (crtLine!=line) 
+		while (crtLine<line) 
 		{
 			if(std::getline(file, s))
 				crtLine++;
@@ -45,6 +45,7 @@ bool readFile(sbyte* array, int line, char * f)
 			}
 		}
 		std::getline(file, s);
+		if(s.size()<10) return false;
 		int i = 0;
 		int numb, count = 0, arrayAdv = 0;
 		while(s[i] != '\0')
