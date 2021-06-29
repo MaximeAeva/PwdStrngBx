@@ -313,23 +313,20 @@ void design(std::string page)
             convertToChar(read, plain);
             if(strcmp(plain, cmd) == 0) 
             {
-                for(int j = 1; j<2; j++) 
-                {
-                    readFile(read, i+j);
-                    decrypt(read, w);
-                    convertToChar(read, plain);
-                    gotoxy(int(COLS/2-6), int(LINES/2)+3*j);
-                    std::cout << registertxt[j];
-                    gotoxy(int(COLS/2-6), int(LINES/2)+(3*j)+1);
-                    std::cout << plain;
-                    
-                }
+                readFile(read, i+1);
+                decrypt(read, w);
+                convertToChar(read, plain);
+                gotoxy(int(COLS/2-10), int(LINES/2));
+                std::cout << registertxt[1];
+                gotoxy(int(COLS/2-10), int(LINES/2)+1);
+                std::cout << plain;
+
                 readFile(read, i+2);
                 decrypt(read, w);
                 convertToChar(read, plain);
-                gotoxy(int(COLS/2-6), int(LINES/2)+(9));
+                gotoxy(int(COLS/2-10), int(LINES/2)+3);
                 std::cout << "Password :";
-                gotoxy(int(COLS/2-6), int(LINES/2)+(9)+1);
+                gotoxy(int(COLS/2-10), int(LINES/2)+3+1);
                 std::cout << "Password copied to clipboard !";
                 //To clipBoard
                 const char* output = plain;
@@ -378,6 +375,7 @@ void design(std::string page)
     {
         parm1 = 3;
         parm2 = 0;
+        sbyte reada[16] = {};
         //Title part
         Reader r("List");
         for(int i = 0; i<int(r.titleSize.height); i++) 
@@ -385,10 +383,15 @@ void design(std::string page)
             gotoxy(int((COLS-2-r.titleSize.width)/2), i+1);
             std::cout << r.text[i];
         }
-
-        sbyte read[16] = {};
         int i = 0;
-        while(readFile(read, i))
+        while(readFile(reada, i)) i++;
+        if(i>10)
+        {
+            //Miss scroll menu
+        }
+        sbyte read[16] = {};
+        i = 0;
+        while(readFile(read, i) && i<31)
         {
             char plain[17] = {};
             decrypt(read, w);
@@ -425,6 +428,9 @@ void design(std::string page)
         convertToHex(cmd, read);
         encrypt(read, w);
         convertToChar(read, cmd);
+
+        gotoxy(int(COLS/2-10), int(LINES/3));
+        std::cout << "                  ";
 
         int i = 0;
         while(readFile(read, i))
