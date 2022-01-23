@@ -53,6 +53,10 @@
         "xloctime": "cpp",
         "cctype": "cpp",
         "string": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "atomic": "cpp",
+        "bit": "cpp",
+        "clocale": "cpp",
+        "compare": "cpp"
     }
 }

@@ -1,5 +1,10 @@
 #include "interface.hpp"
 
+int COLS, LINES;
+extern word w[4*(Nr+1)]; 
+std::default_random_engine generator;
+int menuSize = 7;
+
 word w[4*(Nr+1)] = {}; 
 
 void gotoxy(int x, int y)
@@ -234,6 +239,80 @@ void genMenu(int current, int item, bool* opt, int inter = 0)
     }
 }
 
+void genPad(int current, int item, bool* opt, int inter = 0)
+{
+    int state = 0;
+    char array[17] = {};
+    if(item>4) 
+    {
+        if(!current)
+            item = 1;
+        else
+            item = 0;
+    }
+    else if(item<0)
+    {
+        if(current == 4)
+            item = 3;
+        else
+            item = 4;
+    }
+    for(int i = 0; i<5; i++)
+    {
+        if(i==item)
+            colorMenu(gentxt[i], COLS/3, LINES/3+i, 1);
+        else
+            colorMenu(gentxt[i], COLS/3, LINES/3+i, 0); 
+
+        gotoxy(COLS/3+20, LINES/3+i);
+        if(i<4 && opt[i]) std::cout << "V";
+        else if(i<4 && !opt[i]) std::cout << "X";
+    }
+    if(inter) return;
+    while(!state)
+    {
+        int ch = _getch ();
+        if (ch == 0 || ch == 224)
+        {
+            switch (_getch ())
+            {
+                case 72:
+                    state = 1;
+                    break;
+                case 80:
+                    state = 2;
+                    break;
+                case 77:
+                    state = 3;
+                    break;
+            }
+        }
+    }
+    if(state==1)
+    {
+        if(item-1==current)
+            genMenu(current, item-2, opt);
+        else
+            genMenu(current, item-1, opt);
+    }
+    else if(state==2)
+    {
+        if(item+1==current)
+            genMenu(current, item+2, opt);
+        else
+            genMenu(current, item+1, opt);
+    }
+    else
+    {
+        if(item<4)
+        { 
+            opt[item] = !opt[item];
+            genMenu(current, item, opt);
+        }
+        else return;
+    }
+}
+
 void design(std::string page)
 {
     CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
@@ -250,6 +329,8 @@ void design(std::string page)
     {
         parm2 = -1;
         char array[17] = {};
+        char pseudoArray[17] = {};
+        char charArray[95] = {};
         sbyte key[17] = {};
         //Title part
         Reader r("Welcome");
@@ -263,6 +344,13 @@ void design(std::string page)
         gotoxy(int(COLS/2-6) ,int(LINES/2));
         std::cout << "Enter key:";
 
+        inputPad(charArray, 95);
+        randomize(charArray, sizeof(charArray)/sizeof(char));
+        for(int l = 0; l<95; l++)
+        {
+            gotoxy(int(COLS/2-10+(l%19)) ,int(LINES/2+4+(l/19)));   
+            std::cout<<charArray[l];
+        }
         //Interactions
         gotoxy(int(COLS/2)-8, int(LINES/2)+1);
         safeinput(array);
@@ -273,6 +361,7 @@ void design(std::string page)
     {
         parm1 = 0;
         parm2 = 1;
+
         //Title part
         Reader r("Home");
         for(int i = 0; i<int(r.titleSize.height); i++) 
@@ -280,6 +369,8 @@ void design(std::string page)
             gotoxy(int((COLS-2-r.titleSize.width)/2), i+1);
             std::cout << r.text[i];
         }
+
+        
     }
     else if(page=="search")
     {

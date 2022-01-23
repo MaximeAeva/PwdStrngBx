@@ -23,8 +23,6 @@ This can help you fix memory leaks ;)
 
 Future dev :
 - Add randomizer in global key to prevent keyboard spying
-- Add password generator
-- Add possibility to directly copy password to clipboard
 
 ## Release History
 
@@ -35,7 +33,7 @@ Future dev :
 
 ## Meta
 
-[https://github.com/MaximeAeva](https://github.com/dbader/)
+[https://github.com/MaximeAeva](https://github.com/PwdStrngBx/)
 
 ## Contributing
 
