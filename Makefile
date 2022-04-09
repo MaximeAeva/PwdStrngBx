@@ -1,6 +1,6 @@
 EXE  =	safeME.exe	
 DEBUG =  yes
-CXX = g++
+CXX = g++ -static
 
 # dir
 SRC_DIR =       src
